@@ -3,7 +3,7 @@
 $servername = "";
 $username = "";
 $password = "";
-$ITEMS_PER_PAGE = 5;
+$ITEMS_PER_PAGE = 10;
 $LINE_LIMIT = 3;
 $LINE_LIMIT_ENABLED = true;
 
