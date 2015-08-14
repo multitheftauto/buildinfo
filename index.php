@@ -88,10 +88,10 @@ function OpenURL(e, url){
   <a href="?Branch=master">Master</a>  
        
 	   &nbsp;
-  <a href="?Branch=1.5.0">1.5.0</a>  
+  <a href="?Branch=1.5">1.5</a>  
       
 	  &nbsp;
-  <a href="?Branch=1.4.1">1.4.1</a>  
+  <a href="?Branch=1.4">1.4</a>  
       
 	  &nbsp;
 	  
@@ -216,11 +216,11 @@ else if ( $version == null )
 }
 else
 {
-	$subquery = $subquery . $word . " Version='" . mysqli_real_escape_string ( $conn, $version )  . "'";
+	$subquery = $subquery . $word . " Version LIKE '" . mysqli_real_escape_string ( $conn, $version )  . "%'";
 	$word = " AND";
 	if ($revision == "latest")
 	{
-		$subquery = $subquery . $word . " Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version='" . mysqli_real_escape_string ( $conn, $version ) . "')";
+		$subquery = $subquery . $word . " Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version LIKE '" . mysqli_real_escape_string ( $conn, $version ) . "%')";
 	}
 	else if ( $revision != null )
 	{
