@@ -1,4 +1,10 @@
+ <?php
+ // Server information up here so html errors can't expose our secret ip, username and password
+$servername = "";
+$username = "";
+$password = "";
 
+?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -7,97 +13,44 @@
 <link rel="stylesheet" type="text/css" href="css.css" />
 </head>
 <body>
-  <form action="">
+<form action="/">
 <div id="test" style="background: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#f1f1f1));
   background: -moz-linear-gradient(top,#fff,#f1f1f1);
   border-bottom: 1px solid #ccc;
   padding: 0 0 0 14px;
   height: 33px;">
   <span style='line-height: 33px;vertical-align: middle;'>
+  <a href="/">All</a>  
+       
+	   &nbsp;
   <a href="?Branch=master">Master</a>  
        
 	   &nbsp;
+  <a href="?Branch=1.5.0">1.5.0</a>  
+      
+	  &nbsp;
   <a href="?Branch=1.4.1">1.4.1</a>  
       
 	  &nbsp;
-  <!--<a href="https://code.google.com/p/mtasa-blue/source/list">Google Code</a>  
-      
-	  &nbsp;
-  <a href="https://bugs.mtasa.com/">Mantis</a>  
+	  
+  </span>
+  <div style="float:right;line-height: 33px;vertical-align: middle;padding-right: 20px;">
+     <input name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>">
        
-	   &nbsp;
-  <a href="https://forums.mtasa.com/">Forums</a>  
-       
-	   &nbsp;
-  <a href="https://development.mtasa.com/">Wiki</a>
-       
-	   &nbsp;
-       
-	   &nbsp;
-  !-->
-  <div style="float:right;">
-     <input name="Author" placeholder="Author filter" rows="1" cols="10" value="<? echo $_GET['Author']; ?>">
-       
-     <input name="Branch" placeholder="Branch filter" rows="1" cols="10" value="<? echo $_GET['Branch']; ?>">
+     <input name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>">
 	   
-     <input name="Revision" placeholder="Revision filter" rows="1" cols="10" value="<? echo $_GET['Revision']; ?>">
+     <input name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
 	   
+     <input type="button" onclick="document.location='index.php';" value="Reset" />
      <input type="submit" value="Submit">
   </div>
-  </span>
 </div>
-	</form>
-<!--<table class="results" id="resultstable">
-  <thead>
-  <tr class="header" width='500px' >
-    <th><center><b>Author</b></center></td>		
-    <th><center><b>Branch</b></center></td>		
-    <th><center><b>Revision</b></center></td>
-    <th><center><b>Submit</b></center></td>
-  </tr>
-  </thead>
-  <tbody>
-      <form action="">
-      <tr style="padding:0px;">
-        <td style="padding:5px;">
-           <input name="Author" rows="1" cols="10" value="<? echo $_GET['Author']; ?>">
-        </td>
-        <td style="padding:5px;">
-           <input name="Branch" rows="1" cols="10" value="<? echo $_GET['Branch']; ?>">
-        </td>
-        <td style="padding:5px;">
-           <input name="Revision" rows="1" cols="10" value="<? echo $_GET['Revision']; ?>">
-        </td>
-        <td style="padding:5px;">
-           <input type="submit" value="Submit">
-        </td>
-      </tr>
-      </form>
-  </tbody>
- </table>!-->
-</div>
+</form>
  <div id="maincol">
  <div id="colcontrol">
 <div class="list">
-<b>Committed Changes</b>
-</div>
-<table class="results" id="resultstable">
-  <tbody>
-  <tr style="text-align:center">
-    <th style="width:7ex;text-align:center"><b>Rev</b></th>		
-    <th style="width:5em;text-align:center"><b>Avatar</b></th>		
-    <th style="text-align:center"><b>Author</b></th>		
-    <th style="text-align:center"><b>Branch</b></th>
-    <th style="width:80em;text-align:center"><b>Log Message</b></th>
-    <th style="width:24em;text-align:center"><b>Date</b></th>
-    <th style="width:44ex;text-align:center"><b>SHA</b></th>	
-  </tr>
-  
+ 
  <?php
- // Server information
-$servername = "";
-$username = "";
-$password = "";
 // Get our parameters
 $version = $_GET['Branch'] or null;
 $revision = $_GET['Revision'] or null;
@@ -111,25 +64,40 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Create a select statement
-$sql = "SELECT Revision, URL, LogMessage, DATE_FORMAT(Date, '%e %b, %Y') as Date, SHA, Author, AuthorAvatarURL, AuthorURL, Version FROM mta_gitstuff.github";
+?>
+
+<b>Committed Changes</b>
+</div>
+<table class="results" id="resultstable">
+  <tbody>
+  <tr style="text-align:center">
+    <th style="width:7ex;text-align:center"><b>Rev</b></th>		
+    <th style="width:3.5em;text-align:center"><b>Avatar</b></th>		
+    <th style="text-align:center"><b>Author</b></th>		
+    <th style="text-align:center"><b>Branch</b></th>
+    <th style="width:80em;text-align:center"><b>Log Message</b></th>
+    <th style="width:24em;text-align:center"><b>Date</b></th>
+    <th style="width:50ex;text-align:center"><b>SHA</b></th>	
+  </tr>
+  
+<?php
 
 
 // it works... I don't even...
 if ( $version == "master" )
 {
-	$sql = $sql . " WHERE Version=''";
+	$subquery = $subquery . " WHERE Version='master'";
 	if ($revision == "latest")
 	{
-		$sql = $sql . " and Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version='master')";
+		$subquery = $subquery . " and Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version='master')";
 	}
 	else if ( $revision != null )
 	{
-		$sql = $sql . " and Revision='" . mysqli_real_escape_string ( $conn, $revision ) . "'";
+		$subquery = $subquery . " and Revision='" . mysqli_real_escape_string ( $conn, $revision ) . "'";
 	}
 	if ($user != null )
 	{
-		$sql = $sql . " and Author='" . mysqli_real_escape_string ( $conn, $user )  . "'";
+		$subquery = $subquery . " and Author='" . mysqli_real_escape_string ( $conn, $user )  . "'";
 	}
 }
 else if ( $version == null )
@@ -138,44 +106,57 @@ else if ( $version == null )
 	{
 		if ($revision == "latest")
 		{
-			$sql = $sql . " WHERE Revision=(SELECT max(Revision) from mta_gitstuff.github)";
+			$subquery = $subquery . " WHERE Revision=(SELECT max(Revision) from mta_gitstuff.github)";
 		}
 		else 
 		{
-			$sql = $sql . " WHERE Revision='" . mysqli_real_escape_string ( $conn, $revision )  . "'";
+			$subquery = $subquery . " WHERE Revision='" . mysqli_real_escape_string ( $conn, $revision )  . "'";
 		}
 		if ($user != null )
 		{
-			$sql = $sql . " and Author LIKE '" . mysqli_real_escape_string ( $conn, $user )  . "%'";
+			$subquery = $subquery . " and Author LIKE '" . mysqli_real_escape_string ( $conn, $user )  . "%'";
 		}
 	}
 	else
 	{
 		if ($user != null )
 		{
-			$sql = $sql . " WHERE Author LIKE '" . mysqli_real_escape_string ( $conn, $user )  . "%'";
+			$subquery = $subquery . " WHERE Author LIKE '" . mysqli_real_escape_string ( $conn, $user )  . "%'";
 		}
 	}
 }
 else
 {
-	$sql = $sql . " WHERE Version='" . mysqli_real_escape_string ( $conn, $version )  . "'";
+	$subquery = $subquery . " WHERE Version='" . mysqli_real_escape_string ( $conn, $version )  . "'";
 	if ($revision == "latest")
 	{
-		$sql = $sql . " and Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version='" . mysqli_real_escape_string ( $conn, $version ) . "')";
+		$subquery = $subquery . " and Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version='" . mysqli_real_escape_string ( $conn, $version ) . "')";
 	}
 	else if ( $revision != null )
 	{
-		$sql = $sql . " and Revision='" . mysqli_real_escape_string ( $conn, $revision )  . "'";
+		$subquery = $subquery . " and Revision='" . mysqli_real_escape_string ( $conn, $revision )  . "'";
 	}
 	if ($user != null )
 	{
-		$sql = $sql . " and Author LIKE '" . mysqli_real_escape_string ( $conn, $user )  . "%'";
+		$subquery = $subquery . " and Author LIKE '" . mysqli_real_escape_string ( $conn, $user )  . "%'";
 	}
 }
 
+$page = mysqli_real_escape_string ( $conn, $page );
+
+
+$lowerLimit = $page*5;
+$upperLimit = 5;
+
+// Create a select statement
+$sql = "SELECT Revision, URL, LogMessage, DATE_FORMAT(Date, '%e %b, %Y') as Date, SHA, Author, AuthorAvatarURL, AuthorURL, Version FROM mta_gitstuff.github";
+
+// add in our where clauses
+$sql = $sql . $subquery;
+
 // order by revision descending
-$sql = $sql . " ORDER BY Revision DESC";
+
+$sql = $sql . "  ORDER BY Revision DESC;";
 
 // start the query
 $result = $conn->query($sql);
@@ -235,8 +216,18 @@ if ($result->num_rows > 0) {
 		echo $border . "border-right: 0px solid #ccc;text-align:center;'><a href='?Branch=" . $modifiedVersion . "&amp;Revision=" . $revision . "'>" . $modifiedVersion . "</a></td>\n"; 
 		
 		// output our Log Message, set the max column width and replace any new lines with br tags
-		echo $border . "border-right: 0px solid #ccc;'>" . str_replace ( "\n", "<br /><br />", str_replace ("\n\n", "\n", str_replace ( '>', "&gt;", str_replace ( '<', "&lt;", $row["LogMessage"]) ) ) ) . "</td>\n"; 
-		
+//		echo $border . "border-right: 0px solid #ccc;'>" . str_replace ( "\n", "<br /><br />", str_replace ("\n\n", "\n", str_replace ( '>', "&gt;", str_replace ( '<', "&lt;", $row["LogMessage"]) ) ) ) . "</td>\n"; 	
+        // OMG - Fiddled with by *someone*
+        echo $border . "border-right: 0px solid #ccc;'>"; 
+        $lineList = array_filter( explode( "\n", $row["LogMessage"] ) );
+        foreach( $lineList as $line )
+        {
+            // Indent wrapped lines, 5px between lines
+            echo "<span style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>"; 
+            echo "• " . $line . "<br />"; 
+            echo "</span>";
+        }
+        echo "</td>\n"; 
 
 		// output our Date and set the max column width
 		echo $border . "border-right: 0px solid #ccc;'>" . $row["Date"] . "</td>"; 
