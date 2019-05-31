@@ -60,17 +60,6 @@ function RedirectToGoogleCode ( $version, $revision )
 <title>MTASA Build Information</title>
 <link rel="stylesheet" type="text/css" href="css.css" />
 <script type="text/javascript">
-function OpenURL(e, url){
-
-    if(e.ctrlKey){
-	   window.open(url);
-   }
-   else {
-       document.location = url;
-   }
-   return false;
-};
-
 function toggleFullMessages() {
 	const url = new URL(window.location);
 	const tick = "✔";
@@ -377,12 +366,12 @@ if ($result->num_rows > 0) {
 		// odd  (impacts highlighting)
 		if ( $bTest == true )
 		{
-			echo "<tr onclick=\"OpenURL(event, '" . $row["URL"]  . "');\">\n";
+			echo "<tr>\n";
 		}
 		// even (impacts highlighting)
 		else
 		{
-			echo "<tr class='even' onclick=\"OpenURL(event, '" . $row["URL"]  . "');\">\n";
+			echo "<tr class='even'>\n";
 		}
 		// invert bTest
 		$bTest = !$bTest;
@@ -447,7 +436,7 @@ if ($result->num_rows > 0) {
 		echo $border . "border-right: 0px solid #ccc;'>" . $row["Date"] . "</td>";
 
 		// output our SHA and set the max column width
-		echo $border . "border-right: 0px solid #ccc;'>" . $row["SHA"] . "</td>\n";
+		echo $border . "border-right: 0px solid #ccc;'><div style='width: 100%; height: 100%'><a style='text-decoration: none' href='" . $row["URL"] . "'>" . $row["SHA"] . "</a></div></td>\n";
 
 		// end of row
 		echo "</tr>\n";
