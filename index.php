@@ -369,6 +369,8 @@ $sql = $sql . "  ORDER BY Revision DESC;";
 // start the query
 $result = $conn->query($sql);
 
+$rev = 0;
+
 // make sure we have some rows
 if ($result->num_rows > 0) {
 	// binary true/false for even and odd highlighting
@@ -475,11 +477,18 @@ $conn->close();
 
 ?>
 
+<?php
+if ($rev == 7088) {
+?>
 	<tr onclick="document.location='https://code.google.com/p/mtasa-blue/source/list'">
 	<td colspan='7' class="previoushistory">
 		<strong>Previous history is available at <a style="text-decoration:underline;" href="https://code.google.com/p/mtasa-blue/source/list">our Google Code repository</a></strong>
 	</td>
 	</tr>
+<?php
+}
+?>
+
   </tbody>
  </table>
  </div>
