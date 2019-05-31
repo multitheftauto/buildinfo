@@ -1,8 +1,6 @@
- <?php
- // Server information up here so html errors can't expose our secret ip, username and password
-$servername = "";
-$username = "";
-$password = "";
+<?php
+include 'config.php';
+
 $ITEMS_PER_PAGE = 10;
 $LINE_LIMIT = 3;
 $LINE_LIMIT_ENABLED = true;
