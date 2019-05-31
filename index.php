@@ -96,7 +96,7 @@ window.addEventListener('load', onload);
   background: -moz-linear-gradient(top,#fff,#f1f1f1);
   border-bottom: 1px solid #ccc;
   padding: 0 0 0 14px;
-  height: 33px;">
+  min-height: 33px; display: flex; justify-content: space-between; flex-wrap: wrap;">
   <span style='line-height: 33px;vertical-align: middle;'>
   <a href="?">All</a>
 
@@ -112,7 +112,7 @@ window.addEventListener('load', onload);
 	  &nbsp;
 
   </span>
-  <div style="float:right;line-height: 33px;vertical-align: middle;padding-right: 20px;">
+  <div style="line-height: 33px;vertical-align: middle;padding-right: 20px;">
 	<span style="margin-right: .25em;">
 		<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
 		<label for="shortenedcommits">Long commit messages</label>
