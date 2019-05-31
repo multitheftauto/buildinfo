@@ -71,10 +71,27 @@ function toggleFullMessages() {
 
 	window.location = url;
 }
+
+function onload() {
+	// Remove empty fields from search query
+	const myForm = document.getElementById('searchform');
+	myForm.addEventListener('submit', function () {
+		const allInputs = myForm.getElementsByTagName('input');
+
+		for (let i = 0; i < allInputs.length; i++) {
+			const input = allInputs[i];
+			if (input.name && !input.value) {
+				input.name = '';
+			}
+		}
+	});
+}
+
+window.addEventListener('load', onload);
 </script>
 </head>
 <body>
-<form action="/">
+<form id="searchform" action="/">
 <div id="test" style="background: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#f1f1f1));
   background: -moz-linear-gradient(top,#fff,#f1f1f1);
   border-bottom: 1px solid #ccc;
