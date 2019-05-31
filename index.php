@@ -434,7 +434,7 @@ if ($result->num_rows > 0) {
 				break;
 			}
 			echo "<span style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>";
-			$line = htmlentities(preg_replace('/^\* /', '• ', $line));
+			$line = htmlentities(preg_replace('/^-|\* /', '• ', $line));
 			if ($i > 1) {
 				$line = "<small>" . $line . "</small>";
 			}
