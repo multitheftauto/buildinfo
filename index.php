@@ -347,6 +347,31 @@ if ($page != null && $page > $count && $count != 0)
     <th style="width:54ex;text-align:center"><b>SHA</b></th>
   </tr>
 
+
+<style>
+.commit-header a {
+	text-decoration: none;
+	color: #444d56;
+	font-weight: 600;
+}
+
+.commit-header a:hover {
+	text-decoration: underline
+}
+
+.commit-sha a {
+	text-decoration: none;
+	color: #0366d6;
+	/* font-weight: 600; */
+	width: 100%;
+	height: 100%;
+}
+
+.commit-sha a:hover {
+	text-decoration: underline;
+}
+</style>
+
 <?php
 
 
@@ -441,10 +466,12 @@ if ($result->num_rows > 0) {
 				echo "...";
 				break;
 			}
-			echo "<span style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>";
+			echo "<span class='commit-header' style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>";
 			$line = htmlentities(preg_replace('/^-|\* /', '• ', $line));
 			if ($i > 1) {
 				$line = "<small>" . $line . "</small>";
+			} else {
+				$line = "<a href='" . $row["URL"] . "'>" . $line . "</a>";
 			}
 			echo $line . "<br />";
 			echo "</span>";
@@ -455,7 +482,7 @@ if ($result->num_rows > 0) {
 		echo $border . "border-right: 0px solid #ccc;'>" . $row["Date"] . "</td>";
 
 		// output our SHA and set the max column width
-		echo $border . "border-right: 0px solid #ccc;'><div style='width: 100%; height: 100%'><a style='text-decoration: none' href='" . $row["URL"] . "'>" . $row["SHA"] . "</a></div></td>\n";
+		echo $border . "border-right: 0px solid #ccc;'><div style='width: 100%; height: 100%' class='commit-sha'><a href='" . $row["URL"] . "'>" . $row["SHA"] . "</a></div></td>\n";
 
 		// end of row
 		echo "</tr>\n";
