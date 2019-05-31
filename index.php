@@ -410,7 +410,7 @@ if ($result->num_rows > 0) {
 		// output our Author and his avatar and set the max column width
 		echo $border . "border-right: 0px solid #ccc;text-align:center;'><img style='vertical-align:middle;' src='" . $row["AuthorAvatarURL"] . "' height='25' alt='Avatar' /> </td>\n";
 		$splitAuthor = explode ( '@', $row["Author"] );
-		echo $border . "border-right: 0px solid #ccc;'>" . $splitAuthor[0] . "</td>\n";
+		echo $border . "border-right: 0px solid #ccc;'>" . htmlentities($splitAuthor[0]) . "</td>\n";
 
 		// master branch is just null in the database
 		$modifiedVersion = $row["Version"] ? $row["Version"] : "master";
@@ -434,7 +434,7 @@ if ($result->num_rows > 0) {
 				break;
 			}
 			echo "<span style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>";
-			echo preg_replace('/^\* /', '• ', $line) . "<br />";
+			echo htmlentities(preg_replace('/^\* /', '• ', $line)) . "<br />";
 			echo "</span>";
         }
         echo "</td>\n";
