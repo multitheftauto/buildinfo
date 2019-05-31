@@ -91,7 +91,7 @@ window.addEventListener('load', onload);
 </script>
 </head>
 <body>
-<form id="searchform" action="/">
+<form id="searchform" action="">
 <div id="test" style="background: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#f1f1f1));
   background: -moz-linear-gradient(top,#fff,#f1f1f1);
   border-bottom: 1px solid #ccc;
