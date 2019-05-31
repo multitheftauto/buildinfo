@@ -58,7 +58,7 @@ function RedirectToGoogleCode ( $version, $revision )
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <title>MTASA Build Information</title>
-<link rel="stylesheet" type="text/css" href="css.css" />
+<link rel="stylesheet" type="text/css" href="css.css?1" />
 <script type="text/javascript">
 function toggleFullMessages() {
 	const url = new URL(window.location);
