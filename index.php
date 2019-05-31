@@ -3,7 +3,7 @@ include 'config.php';
 
 $ITEMS_PER_PAGE = 10;
 $LINE_LIMIT = 3;
-$LINE_LIMIT_ENABLED = true;
+$LINE_LIMIT_ENABLED = !isset($_GET['full']) || $_GET['full'] == 'false';
 
 
 function CheckParam ( $param )
@@ -70,6 +70,18 @@ function OpenURL(e, url){
    }
    return false;
 };
+
+function toggleFullMessages() {
+	const url = new URL(window.location);
+	const tick = "✔";
+	if (url.searchParams.has("full", tick)) {
+		url.searchParams.delete("full");
+	} else {
+		url.searchParams.set("full", tick);
+	}
+
+	window.location = url;
+}
 </script>
 </head>
 <body>
@@ -95,6 +107,10 @@ function OpenURL(e, url){
 
   </span>
   <div style="float:right;line-height: 33px;vertical-align: middle;padding-right: 20px;">
+	<span style="margin-right: .25em;">
+		<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
+		<label for="shortenedcommits">Long commit messages</label>
+	</span>
      <input name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>">
 
      <input name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>">
