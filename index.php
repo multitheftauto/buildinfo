@@ -434,7 +434,7 @@ if ($result->num_rows > 0) {
 				break;
 			}
 			echo "<span style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>";
-            echo "• " . $line . "<br />";
+			echo preg_replace('/^\* /', '• ', $line) . "<br />";
 			echo "</span>";
         }
         echo "</td>\n";
