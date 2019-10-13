@@ -58,7 +58,8 @@ function RedirectToGoogleCode ( $version, $revision )
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <title>MTASA Build Information</title>
-<link rel="stylesheet" type="text/css" href="css.css?1" />
+<!-- <link rel="stylesheet" type="text/css" href="css.css?1" /> -->
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
 <script type="text/javascript">
 function toggleFullMessages() {
 	const url = new URL(window.location);
@@ -91,45 +92,35 @@ window.addEventListener('load', onload);
 </script>
 </head>
 <body>
-<form id="searchform" action="">
-<div id="test" style="background: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#f1f1f1));
-  background: -moz-linear-gradient(top,#fff,#f1f1f1);
-  border-bottom: 1px solid #ccc;
-  padding: 0 0 0 14px;
-  min-height: 33px; display: flex; justify-content: space-between; flex-wrap: wrap;">
-  <span style='line-height: 33px;vertical-align: middle;'>
-  <a href="?">All</a>
+	<form id="searchform" action="">
 
-	   &nbsp;
-  <a href="?Branch=master">Master</a>
+		<nav class="UnderlineNav px-3" aria-label="navigation bar">
+			<div class="UnderlineNav-body">
+				<a href="?" class="UnderlineNav-item">All</a>
+				<a href="?Branch=master" class="UnderlineNav-item">Master</a>
+				<a href="?Branch=1.5" class="UnderlineNav-item">1.5</a>
+				<a href="?Branch=1.4" class="UnderlineNav-item">1.4</a>
+			</div>
 
-	   &nbsp;
-  <a href="?Branch=1.5">1.5</a>
+			<div class="UnderlineNav-actions">
+				<span style="margin-right: .25em;">
+					<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
+					<label for="shortenedcommits">Long commit messages</label>
+				</span>
+				<input name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>">
 
-	  &nbsp;
-  <a href="?Branch=1.4">1.4</a>
+				<input name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>">
 
-	  &nbsp;
+				<input name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>">
 
-  </span>
-  <div style="line-height: 33px;vertical-align: middle;padding-right: 20px;">
-	<span style="margin-right: .25em;">
-		<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
-		<label for="shortenedcommits">Long commit messages</label>
-	</span>
-     <input name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>">
+				<input name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
 
-     <input name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>">
+				<input class="btn" type="button" onclick="document.location='index.php';" value="Reset" />
+				<input class="btn" type="submit" value="Submit">
+			</div>
+		</nav>
 
-     <input name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>">
-
-     <input name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
-
-     <input type="button" onclick="document.location='index.php';" value="Reset" />
-     <input type="submit" value="Submit">
-  </div>
-</div>
-</form>
+	</form>
  <div id="maincol">
  <div id="colcontrol">
 <div class="list">
