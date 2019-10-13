@@ -431,7 +431,7 @@ if ($result->num_rows > 0) {
 		$bBorderChange = true;
 
 		// output our Author and his avatar and set the max column width
-		echo $border . "border-right: 0px solid #ccc;'><div style='display:flex; justify-content: center; align-items:center;'><img class='m-2' style='border-radius: 2px; display:block;' src='" . $row["AuthorAvatarURL"] . "' height='20' width='20' alt='Avatar' />\n";
+		echo $border . "border-right: 0px solid #ccc;'><div style='display:flex; align-items:center;'><img class='m-2' style='border-radius: 2px; display:block;' src='" . $row["AuthorAvatarURL"] . "' height='20' width='20' alt='Avatar' />\n";
 		$splitAuthor = explode ( '@', $row["Author"] );
 		echo htmlentities($splitAuthor[0]) . "</div></td>\n";
 
