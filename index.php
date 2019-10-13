@@ -117,10 +117,11 @@ window.addEventListener('load', onload);
 		</nav>
 
 	</form>
- <div id="maincol">
- <div id="colcontrol">
-<div class="list">
-<div class="googlecodelink">
+
+	<div id="maincol">
+		<div id="colcontrol">
+			<div class="list">
+				<div class="googlecodelink">
 
  <?php
 
@@ -285,35 +286,38 @@ if ($page != null && $page > $count && $count != 0)
  // case 3: get query includes a page #
  else
  {
-	$NewerLink = str_replace("Page=$page", "Page=$previouspage", $_SERVER['QUERY_STRING']);
-	$OlderLink = str_replace("Page=$page", "Page=$nextpage", $_SERVER['QUERY_STRING']);
+	$NewerLink = "index.php?" . str_replace("Page=$page", "Page=$previouspage", $_SERVER['QUERY_STRING']);
+	$OlderLink = "index.php?" . str_replace("Page=$page", "Page=$nextpage", $_SERVER['QUERY_STRING']);
  }
 
  // Create a variable to store our next / previous page tag string and build it up so we can print it at the top and bottom
- $nextPreviousPage = "";
+ $nextPreviousPage = '<nav class="paginate-container" aria-label="Pagination"> <div class="pagination"> ';
 
- // if we need to show the newer link
+ // if we need to show the "Previous" (newer) link
  if ($page > 1 ) {
-	$nextPreviousPage = $nextPreviousPage . "<a href=\"index.php?";
-	$nextPreviousPage = $nextPreviousPage . $NewerLink;
-	$nextPreviousPage = $nextPreviousPage . "\"><b>&lsaquo;</b> Newer</a> ";
+	$nextPreviousPage = $nextPreviousPage . '<a class="previous_page" rel="previous" href="' . $NewerLink . '" aria-label="Previous Page">Previous</a> ';
+ } else {
+	$nextPreviousPage = $nextPreviousPage . '<span class="previous_page disabled">Previous</span> ';
  }
- // show page #
- $nextPreviousPage = $nextPreviousPage . "Page " . $page . " of " . $count;
+
 
  // show older link
- $nextPreviousPage = $nextPreviousPage . " <a href=\"index.php?";
- $nextPreviousPage = $nextPreviousPage . $OlderLink;
+ $nextPreviousPage = $nextPreviousPage . ' <a class="next_page" rel="next" href="' . $OlderLink . '" aria-label="Next Page">';
 
  // show link to google code page
  if ($nextpage > $count && $count != 0)
  {
-	$nextPreviousPage = $nextPreviousPage . "\">Older (Google Code) <b>&rsaquo;</b></a>";
+	$nextPreviousPage = $nextPreviousPage . "Next (Google Code)";
  }
  else
  {
-	$nextPreviousPage = $nextPreviousPage . "\">Older <b>&rsaquo;</b></a>";
+	$nextPreviousPage = $nextPreviousPage . "Next";
  }
+
+ $nextPreviousPage = $nextPreviousPage . "</a></div></nav>";
+
+ // show page #
+ $nextPreviousPage = $nextPreviousPage . "Page " . $page . " of " . $count;
  // print next/previous page at the top
  echo $nextPreviousPage;
 
@@ -508,17 +512,14 @@ if ($rev == 7088) {
  </div>
  </div>
 
- <div class="bottomdiv">
-		<div class="listbottom">
-			<div class="googlecodelink">
-				<?php
-					// print our next / previous page tag at the bottom
-					echo $nextPreviousPage;
-				?>
-			</div>
-			<b>End of Committed Changes</b>
+<div class="bottomdiv">
+	<div class="listbottom">
+		<div class="googlecodelink">
+			<!-- Pagination -->
+			<?= $nextPreviousPage; ?>
 		</div>
- </div>
+	</div>
+</div>
 
  </body>
  </html>
