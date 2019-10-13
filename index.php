@@ -319,10 +319,10 @@ if ($page != null && $page > $count && $count != 0)
 	$nextPreviousPage = $nextPreviousPage . "Next";
  }
 
- $nextPreviousPage = $nextPreviousPage . "</a></div></nav>";
+ $nextPreviousPage = $nextPreviousPage . "</a>";
 
  // show page #
- $nextPreviousPage = $nextPreviousPage . "Page " . $page . " of " . $count;
+ $nextPreviousPage = $nextPreviousPage . "<span class='disabled'>Page " . $page . " of " . $count . "</span></div></nav>";
  // print next/previous page at the top
  echo $nextPreviousPage;
 
