@@ -113,6 +113,31 @@ function onload() {
 
 window.addEventListener('load', onload);
 </script>
+
+<style>
+.commit-header a {
+	text-decoration: none;
+	color: #444d56;
+	font-weight: 600;
+}
+
+.commit-header a:hover {
+	text-decoration: underline
+}
+
+.commit-sha a {
+	text-decoration: none;
+	color: #0366d6;
+	/* font-weight: 600; */
+	width: 100%;
+	height: 100%;
+}
+
+.commit-sha a:hover {
+	text-decoration: underline;
+}
+</style>
+
 </head>
 <body>
 	<form id="searchform" action="">
@@ -140,11 +165,6 @@ window.addEventListener('load', onload);
 		</nav>
 
 	</form>
-
-	<div id="maincol">
-		<div id="colcontrol">
-			<div class="list">
-				<div class="googlecodelink">
 
  <?php
 
@@ -323,50 +343,29 @@ if ($page != null && $page > $count && $count != 0)
 
  // show page #
  $nextPreviousPage = $nextPreviousPage . "<span class='disabled'>Page " . $page . " of " . $count . "</span></div></nav>";
- // print next/previous page at the top
- echo $nextPreviousPage;
 
  ?>
 
- </div>
-<b>Committed Changes</b>
-</div>
-<table class="results" id="resultstable">
-  <tbody>
-  <tr style="text-align:center">
-    <th style="width:7ex;text-align:center"><b>Rev</b></th>
-    <th style="width:3.5em;text-align:center"><b>Avatar</b></th>
-    <th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Author</b></th>
-    <th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Branch</b></th>
-    <th style="width:80em;text-align:center"><b>Log Message</b></th>
-    <th style="width:22em;text-align:center"><b>Date</b></th>
-    <th style="width:54ex;text-align:center"><b>SHA</b></th>
-  </tr>
 
+<div id="maincol">
+	<div id="colcontrol">
+		<div class="list">
+			<div class="googlecodelink">
+				<?= $nextPreviousPage ?>
+			</div>
+		</div>
 
-<style>
-.commit-header a {
-	text-decoration: none;
-	color: #444d56;
-	font-weight: 600;
-}
-
-.commit-header a:hover {
-	text-decoration: underline
-}
-
-.commit-sha a {
-	text-decoration: none;
-	color: #0366d6;
-	/* font-weight: 600; */
-	width: 100%;
-	height: 100%;
-}
-
-.commit-sha a:hover {
-	text-decoration: underline;
-}
-</style>
+		<table class="results" id="resultstable">
+			<tbody>
+				<tr style="text-align:center">
+					<th style="width:7ex;text-align:center"><b>Rev</b></th>
+					<th style="width:3.5em;text-align:center"><b>Avatar</b></th>
+					<th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Author</b></th>
+					<th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Branch</b></th>
+					<th style="width:80em;text-align:center"><b>Log Message</b></th>
+					<th style="width:22em;text-align:center"><b>Date</b></th>
+					<th style="width:54ex;text-align:center"><b>SHA</b></th>
+				</tr>
 
 <?php
 
