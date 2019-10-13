@@ -359,7 +359,6 @@ if ($page != null && $page > $count && $count != 0)
 			<tbody>
 				<tr style="text-align:center">
 					<th style="width:7ex;text-align:center"><b>Rev</b></th>
-					<th style="width:3.5em;text-align:center"><b>Avatar</b></th>
 					<th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Author</b></th>
 					<th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Branch</b></th>
 					<th style="width:80em;text-align:center"><b>Log Message</b></th>
@@ -432,9 +431,9 @@ if ($result->num_rows > 0) {
 		$bBorderChange = true;
 
 		// output our Author and his avatar and set the max column width
-		echo $border . "border-right: 0px solid #ccc;text-align:center;'><img style='vertical-align:middle;' src='" . $row["AuthorAvatarURL"] . "' height='25' alt='Avatar' /> </td>\n";
+		echo $border . "border-right: 0px solid #ccc;'><div style='display:flex; justify-content: center; align-items:center;'><img class='m-2' style='border-radius: 2px; display:block;' src='" . $row["AuthorAvatarURL"] . "' height='20' width='20' alt='Avatar' />\n";
 		$splitAuthor = explode ( '@', $row["Author"] );
-		echo $border . "border-right: 0px solid #ccc;'>" . htmlentities($splitAuthor[0]) . "</td>\n";
+		echo htmlentities($splitAuthor[0]) . "</div></td>\n";
 
 		// master branch is just null in the database
 		$modifiedVersion = $row["Version"] ? $row["Version"] : "master";
