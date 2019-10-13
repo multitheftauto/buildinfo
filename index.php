@@ -51,6 +51,29 @@ function RedirectToGoogleCode ( $version, $revision )
 	}
 	die();
 }
+
+
+// Get our parameters
+$version = CheckParam('Branch');
+$revision = CheckParam('Revision');
+$user = CheckParam('Author');
+$SHA = CheckParam('SHA');
+$page = CheckParam('Page');
+$limit = CheckParam('Limit');
+if ($limit != null && $limit <= 50)
+{
+	$ITEMS_PER_PAGE = $limit;
+}
+if ($page == null)
+{
+	$page = 1;
+}
+
+// Anything less than this is google code
+if ($revision != null && $revision < 7088)
+{
+	RedirectToGoogleCode ( $version, $revision  );
+}
 ?>
 
 <!DOCTYPE html>
@@ -96,10 +119,10 @@ window.addEventListener('load', onload);
 
 		<nav class="UnderlineNav px-3" aria-label="navigation bar">
 			<div class="UnderlineNav-body">
-				<a href="?" class="UnderlineNav-item">All</a>
-				<a href="?Branch=master" class="UnderlineNav-item">Master</a>
-				<a href="?Branch=1.5" class="UnderlineNav-item">1.5</a>
-				<a href="?Branch=1.4" class="UnderlineNav-item">1.4</a>
+				<a href="?" class="UnderlineNav-item <?= $version == null ? "selected" : ""?>">All</a>
+				<a href="?Branch=master" class="UnderlineNav-item <?= $version == 'master' ? "selected" : ""?>">Master</a>
+				<a href="?Branch=1.5" class="UnderlineNav-item <?= $version == '1.5' ? "selected" : ""?>">1.5</a>
+				<a href="?Branch=1.4" class="UnderlineNav-item <?= $version == '1.4' ? "selected" : ""?>">1.4</a>
 			</div>
 
 			<div class="UnderlineNav-actions">
@@ -125,27 +148,6 @@ window.addEventListener('load', onload);
 
  <?php
 
-// Get our parameters
-$version = CheckParam('Branch');
-$revision = CheckParam('Revision');
-$user = CheckParam('Author');
-$SHA = CheckParam('SHA');
-$page = CheckParam('Page');
-$limit = CheckParam('Limit');
-if ($limit != null && $limit <= 50)
-{
-	$ITEMS_PER_PAGE = $limit;
-}
-if ($page == null)
-{
-	$page = 1;
-}
-
-// Anything less than this is google code
-if ($revision != null && $revision < 7088)
-{
-	RedirectToGoogleCode ( $version, $revision  );
-}
 
 // Create connection
 $conn = mysqli_connect($servername, $username, $password, "", 54006);
