@@ -103,17 +103,13 @@ window.addEventListener('load', onload);
 			</div>
 
 			<div class="UnderlineNav-actions">
-				<span style="margin-right: .25em;">
-					<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
-					<label for="shortenedcommits">Long commit messages</label>
-				</span>
-				<input name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>">
+				<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
+				<label for="shortenedcommits">Long commit messages</label>
 
-				<input name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>">
-
-				<input name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>">
-
-				<input name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
+				<input class="form-control" name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>" />
+				<input class="form-control" name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>" />
+				<input class="form-control" name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>" />
+				<input class="form-control" name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
 
 				<input class="btn" type="button" onclick="document.location='index.php';" value="Reset" />
 				<input class="btn" type="submit" value="Submit">
