@@ -288,9 +288,12 @@ if ($page != null && $page > $count && $count != 0)
  // case 3: get query includes a page #
  else
  {
-	$NewerLink = "index.php?" . str_replace("Page=$page", "Page=$previouspage", $_SERVER['QUERY_STRING']);
-	$OlderLink = "index.php?" . str_replace("Page=$page", "Page=$nextpage", $_SERVER['QUERY_STRING']);
+	$NewerLink = str_replace("Page=$page", "Page=$previouspage", $_SERVER['QUERY_STRING']);
+	$OlderLink = str_replace("Page=$page", "Page=$nextpage", $_SERVER['QUERY_STRING']);
  }
+
+ $NewerLink = "index.php?" . $NewerLink;
+ $OlderLink = "index.php?" . $OlderLink;
 
  // Create a variable to store our next / previous page tag string and build it up so we can print it at the top and bottom
  $nextPreviousPage = '<nav class="paginate-container" aria-label="Pagination"> <div class="pagination"> ';
