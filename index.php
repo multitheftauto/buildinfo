@@ -368,9 +368,6 @@ if ($page != null && $page > $count && $count != 0)
 				</tr>
 
 <?php
-
-
-
 $page = $page - 1;
 
 $lowerLimit = $page * $ITEMS_PER_PAGE;
@@ -383,7 +380,6 @@ $sql = "SELECT Revision, URL, LogMessage, DATE_FORMAT(Date, '%e %M, %Y') as Date
 $sql = $sql . $subquery;
 
 // order by revision descending
-
 $sql = $sql . "  ORDER BY Revision DESC;";
 
 // start the query
@@ -499,17 +495,6 @@ $conn->close();
 
 ?>
 
-<?php
-if ($rev == 7088) {
-?>
-	<tr onclick="document.location='https://code.google.com/p/mtasa-blue/source/list'">
-	<td colspan='7' class="previoushistory">
-		<strong>Previous history is available at <a style="text-decoration:underline;" href="https://code.google.com/p/mtasa-blue/source/list">our Google Code repository</a></strong>
-	</td>
-	</tr>
-<?php
-}
-?>
 
   </tbody>
  </table>
