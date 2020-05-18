@@ -78,7 +78,7 @@ $user = CheckParam('Author');
 $SHA = CheckParam('SHA');
 $page = CheckParam('Page');
 $limit = CheckParam('Limit');
-if ($limit != null && $limit <= 50)
+if ($limit != null && $limit <= 500)
 {
 	$ITEMS_PER_PAGE = $limit;
 }
