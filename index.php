@@ -1,6 +1,24 @@
 <?php
 include 'config.php';
 
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, "", 54006);
+
+if ($_GET["json"] == "true" ) {
+	header('Content-Type: application/json');
+	$result = $conn->query("select * from mta_gitstuff.github order by revision desc, date desc");
+	$myArray = array();
+
+	while($row = $result->fetch_array(MYSQLI_ASSOC)) {
+		$myArray[] = $row;
+	}
+	echo json_encode($myArray);
+
+	$result->close();
+	$conn->close();
+	idie();
+}
+
 $ITEMS_PER_PAGE = 10;
 $LINE_LIMIT = 3;
 $LINE_LIMIT_ENABLED = !isset($_GET['full']) || $_GET['full'] == 'false';
@@ -169,8 +187,7 @@ window.addEventListener('load', onload);
  <?php
 
 
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, "", 54006);
+
 
 // Check connection
 if (!$conn) {
