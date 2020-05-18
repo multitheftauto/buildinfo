@@ -51,6 +51,29 @@ function RedirectToGoogleCode ( $version, $revision )
 	}
 	die();
 }
+
+
+// Get our parameters
+$version = CheckParam('Branch');
+$revision = CheckParam('Revision');
+$user = CheckParam('Author');
+$SHA = CheckParam('SHA');
+$page = CheckParam('Page');
+$limit = CheckParam('Limit');
+if ($limit != null && $limit <= 50)
+{
+	$ITEMS_PER_PAGE = $limit;
+}
+if ($page == null)
+{
+	$page = 1;
+}
+
+// Anything less than this is google code
+if ($revision != null && $revision < 7088)
+{
+	RedirectToGoogleCode ( $version, $revision  );
+}
 ?>
 
 <!DOCTYPE html>
@@ -58,7 +81,8 @@ function RedirectToGoogleCode ( $version, $revision )
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <title>MTASA Build Information</title>
-<link rel="stylesheet" type="text/css" href="css.css?1" />
+<!-- <link rel="stylesheet" type="text/css" href="css.css?1" /> -->
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
 <script type="text/javascript">
 function toggleFullMessages() {
 	const url = new URL(window.location);
@@ -89,75 +113,61 @@ function onload() {
 
 window.addEventListener('load', onload);
 </script>
+
+<style>
+.commit-header a {
+	text-decoration: none;
+	color: #444d56;
+	font-weight: 600;
+}
+
+.commit-header a:hover {
+	text-decoration: underline
+}
+
+.commit-sha a {
+	text-decoration: none;
+	color: #0366d6;
+	/* font-weight: 600; */
+	width: 100%;
+	height: 100%;
+}
+
+.commit-sha a:hover {
+	text-decoration: underline;
+}
+</style>
+
 </head>
 <body>
-<form id="searchform" action="">
-<div id="test" style="background: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#f1f1f1));
-  background: -moz-linear-gradient(top,#fff,#f1f1f1);
-  border-bottom: 1px solid #ccc;
-  padding: 0 0 0 14px;
-  min-height: 33px; display: flex; justify-content: space-between; flex-wrap: wrap;">
-  <span style='line-height: 33px;vertical-align: middle;'>
-  <a href="?">All</a>
+	<form id="searchform" action="">
 
-	   &nbsp;
-  <a href="?Branch=master">Master</a>
+		<nav class="UnderlineNav px-3" aria-label="navigation bar">
+			<div class="UnderlineNav-body">
+				<a href="?" class="UnderlineNav-item <?= $version == null ? "selected" : ""?>">All</a>
+				<a href="?Branch=master" class="UnderlineNav-item <?= $version == 'master' ? "selected" : ""?>">Master</a>
+				<a href="?Branch=1.5" class="UnderlineNav-item <?= $version == '1.5' ? "selected" : ""?>">1.5</a>
+				<a href="?Branch=1.4" class="UnderlineNav-item <?= $version == '1.4' ? "selected" : ""?>">1.4</a>
+			</div>
 
-	   &nbsp;
-  <a href="?Branch=1.5">1.5</a>
+			<div class="UnderlineNav-actions">
+				<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
+				<label for="shortenedcommits">Long commit messages</label>
 
-	  &nbsp;
-  <a href="?Branch=1.4">1.4</a>
+				<input class="form-control" name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>" />
+				<input class="form-control" name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>" />
+				<input class="form-control" name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>" />
+				<input class="form-control" name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
 
-	  &nbsp;
+				<input class="btn" type="button" onclick="document.location='index.php';" value="Reset" />
+				<input class="btn" type="submit" value="Submit">
+			</div>
+		</nav>
 
-  </span>
-  <div style="line-height: 33px;vertical-align: middle;padding-right: 20px;">
-	<span style="margin-right: .25em;">
-		<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
-		<label for="shortenedcommits">Long commit messages</label>
-	</span>
-     <input name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>">
-
-     <input name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>">
-
-     <input name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>">
-
-     <input name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
-
-     <input type="button" onclick="document.location='index.php';" value="Reset" />
-     <input type="submit" value="Submit">
-  </div>
-</div>
-</form>
- <div id="maincol">
- <div id="colcontrol">
-<div class="list">
-<div class="googlecodelink">
+	</form>
 
  <?php
 
-// Get our parameters
-$version = CheckParam('Branch');
-$revision = CheckParam('Revision');
-$user = CheckParam('Author');
-$SHA = CheckParam('SHA');
-$page = CheckParam('Page');
-$limit = CheckParam('Limit');
-if ($limit != null && $limit <= 50)
-{
-	$ITEMS_PER_PAGE = $limit;
-}
-if ($page == null)
-{
-	$page = 1;
-}
-
-// Anything less than this is google code
-if ($revision != null && $revision < 7088)
-{
-	RedirectToGoogleCode ( $version, $revision  );
-}
 
 // Create connection
 $conn = mysqli_connect($servername, $username, $password, "", 54006);
@@ -302,80 +312,61 @@ if ($page != null && $page > $count && $count != 0)
 	$OlderLink = str_replace("Page=$page", "Page=$nextpage", $_SERVER['QUERY_STRING']);
  }
 
- // Create a variable to store our next / previous page tag string and build it up so we can print it at the top and bottom
- $nextPreviousPage = "";
+ $NewerLink = "index.php?" . $NewerLink;
+ $OlderLink = "index.php?" . $OlderLink;
 
- // if we need to show the newer link
+ // Create a variable to store our next / previous page tag string and build it up so we can print it at the top and bottom
+ $nextPreviousPage = '<nav class="paginate-container" aria-label="Pagination"> <div class="pagination"> ';
+
+ // if we need to show the "Previous" (newer) link
  if ($page > 1 ) {
-	$nextPreviousPage = $nextPreviousPage . "<a href=\"index.php?";
-	$nextPreviousPage = $nextPreviousPage . $NewerLink;
-	$nextPreviousPage = $nextPreviousPage . "\"><b>&lsaquo;</b> Newer</a> ";
+	$nextPreviousPage = $nextPreviousPage . '<a class="previous_page" rel="previous" href="' . $NewerLink . '" aria-label="Previous Page">Previous</a> ';
+ } else {
+	$nextPreviousPage = $nextPreviousPage . '<span class="previous_page disabled">Previous</span> ';
  }
- // show page #
- $nextPreviousPage = $nextPreviousPage . "Page " . $page . " of " . $count;
+
 
  // show older link
- $nextPreviousPage = $nextPreviousPage . " <a href=\"index.php?";
- $nextPreviousPage = $nextPreviousPage . $OlderLink;
+ $nextPreviousPage = $nextPreviousPage . ' <a class="next_page" rel="next" href="' . $OlderLink . '" aria-label="Next Page">';
 
  // show link to google code page
  if ($nextpage > $count && $count != 0)
  {
-	$nextPreviousPage = $nextPreviousPage . "\">Older (Google Code) <b>&rsaquo;</b></a>";
+	$nextPreviousPage = $nextPreviousPage . "Next (Google Code)";
  }
  else
  {
-	$nextPreviousPage = $nextPreviousPage . "\">Older <b>&rsaquo;</b></a>";
+	$nextPreviousPage = $nextPreviousPage . "Next";
  }
- // print next/previous page at the top
- echo $nextPreviousPage;
+
+ $nextPreviousPage = $nextPreviousPage . "</a>";
+
+ // show page #
+ $nextPreviousPage = $nextPreviousPage . "<span class='disabled'>Page " . $page . " of " . $count . "</span></div></nav>";
 
  ?>
 
- </div>
-<b>Committed Changes</b>
-</div>
-<table class="results" id="resultstable">
-  <tbody>
-  <tr style="text-align:center">
-    <th style="width:7ex;text-align:center"><b>Rev</b></th>
-    <th style="width:3.5em;text-align:center"><b>Avatar</b></th>
-    <th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Author</b></th>
-    <th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Branch</b></th>
-    <th style="width:80em;text-align:center"><b>Log Message</b></th>
-    <th style="width:22em;text-align:center"><b>Date</b></th>
-    <th style="width:54ex;text-align:center"><b>SHA</b></th>
-  </tr>
 
+<div id="maincol">
+	<div id="colcontrol">
+		<div class="list">
+			<div class="googlecodelink">
+				<?= $nextPreviousPage ?>
+			</div>
+		</div>
 
-<style>
-.commit-header a {
-	text-decoration: none;
-	color: #444d56;
-	font-weight: 600;
-}
-
-.commit-header a:hover {
-	text-decoration: underline
-}
-
-.commit-sha a {
-	text-decoration: none;
-	color: #0366d6;
-	/* font-weight: 600; */
-	width: 100%;
-	height: 100%;
-}
-
-.commit-sha a:hover {
-	text-decoration: underline;
-}
-</style>
+		<table class="results" id="resultstable">
+			<tbody>
+				<tr style="text-align:center">
+					<th style="width:7ex;text-align:center"><b>Rev</b></th>
+					<th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Author</b></th>
+					<th style="text-align:center;padding-right:10px;padding-left:10px;"><b>Branch</b></th>
+					<th style="width:80em;text-align:center"><b>Log Message</b></th>
+					<th style="width:22em;text-align:center"><b>Date</b></th>
+					<th style="width:54ex;text-align:center"><b>SHA</b></th>
+				</tr>
 
 <?php
-
-
-
 $page = $page - 1;
 
 $lowerLimit = $page * $ITEMS_PER_PAGE;
@@ -388,7 +379,6 @@ $sql = "SELECT Revision, URL, LogMessage, DATE_FORMAT(Date, '%e %M, %Y') as Date
 $sql = $sql . $subquery;
 
 // order by revision descending
-
 $sql = $sql . "  ORDER BY Revision DESC;";
 
 // start the query
@@ -441,9 +431,9 @@ if ($result->num_rows > 0) {
 		$bBorderChange = true;
 
 		// output our Author and his avatar and set the max column width
-		echo $border . "border-right: 0px solid #ccc;text-align:center;'><img style='vertical-align:middle;' src='" . $row["AuthorAvatarURL"] . "' height='25' alt='Avatar' /> </td>\n";
+		echo $border . "border-right: 0px solid #ccc;'><div style='display:flex; align-items:center;'><img class='m-2' style='border-radius: 2px; display:block;' src='" . $row["AuthorAvatarURL"] . "' height='20' width='20' alt='Avatar' />\n";
 		$splitAuthor = explode ( '@', $row["Author"] );
-		echo $border . "border-right: 0px solid #ccc;'>" . htmlentities($splitAuthor[0]) . "</td>\n";
+		echo htmlentities($splitAuthor[0]) . "</div></td>\n";
 
 		// master branch is just null in the database
 		$modifiedVersion = $row["Version"] ? $row["Version"] : "master";
@@ -504,34 +494,20 @@ $conn->close();
 
 ?>
 
-<?php
-if ($rev == 7088) {
-?>
-	<tr onclick="document.location='https://code.google.com/p/mtasa-blue/source/list'">
-	<td colspan='7' class="previoushistory">
-		<strong>Previous history is available at <a style="text-decoration:underline;" href="https://code.google.com/p/mtasa-blue/source/list">our Google Code repository</a></strong>
-	</td>
-	</tr>
-<?php
-}
-?>
 
   </tbody>
  </table>
  </div>
  </div>
 
- <div class="bottomdiv">
-		<div class="listbottom">
-			<div class="googlecodelink">
-				<?php
-					// print our next / previous page tag at the bottom
-					echo $nextPreviousPage;
-				?>
-			</div>
-			<b>End of Committed Changes</b>
+<div class="bottomdiv">
+	<div class="listbottom">
+		<div class="googlecodelink">
+			<!-- Pagination -->
+			<?= $nextPreviousPage; ?>
 		</div>
- </div>
+	</div>
+</div>
 
  </body>
  </html>
