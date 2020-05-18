@@ -78,11 +78,11 @@ $user = CheckParam('Author');
 $SHA = CheckParam('SHA');
 $page = CheckParam('Page');
 $limit = CheckParam('Limit');
-if ($limit != null && $limit <= 500)
+if (is_numeric($limit) && $limit <= 500)
 {
 	$ITEMS_PER_PAGE = $limit;
 }
-if ($page == null)
+if (!is_numeric($page) || $page < 1)
 {
 	$page = 1;
 }
@@ -172,10 +172,10 @@ window.addEventListener('load', onload);
 				<input id="shortenedcommits" type="checkbox" <?= $LINE_LIMIT_ENABLED ? "" : "checked" ?> onclick="toggleFullMessages()">
 				<label for="shortenedcommits">Long commit messages</label>
 
-				<input class="form-control" name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo $_GET['SHA']; ?>" />
-				<input class="form-control" name="Author" placeholder="Author filter" value="<? echo $_GET['Author']; ?>" />
-				<input class="form-control" name="Branch" placeholder="Branch filter" value="<? echo $_GET['Branch']; ?>" />
-				<input class="form-control" name="Revision" placeholder="Revision filter" value="<? echo $_GET['Revision']; ?>">
+				<input class="form-control" name="SHA" placeholder="SHA filter" style="width:21em" value="<? echo htmlspecialchars($_GET['SHA']); ?>" />
+				<input class="form-control" name="Author" placeholder="Author filter" value="<? echo htmlspecialchars($_GET['Author']); ?>" />
+				<input class="form-control" name="Branch" placeholder="Branch filter" value="<? echo htmlspecialchars($_GET['Branch']); ?>" />
+				<input class="form-control" name="Revision" placeholder="Revision filter" value="<? echo htmlspecialchars($_GET['Revision']); ?>">
 
 				<input class="btn" type="button" onclick="document.location='index.php';" value="Reset" />
 				<input class="btn" type="submit" value="Submit">
@@ -325,8 +325,8 @@ if ($page != null && $page > $count && $count != 0)
  // case 3: get query includes a page #
  else
  {
-	$NewerLink = str_replace("Page=$page", "Page=$previouspage", $_SERVER['QUERY_STRING']);
-	$OlderLink = str_replace("Page=$page", "Page=$nextpage", $_SERVER['QUERY_STRING']);
+	$NewerLink = str_replace("Page=" . $_GET['Page'], "Page=$previouspage", $_SERVER['QUERY_STRING']);
+	$OlderLink = str_replace("Page=" . $_GET['Page'], "Page=$nextpage", $_SERVER['QUERY_STRING']);
  }
 
  $NewerLink = "index.php?" . $NewerLink;
@@ -450,7 +450,7 @@ if ($result->num_rows > 0) {
 		// output our Author and his avatar and set the max column width
 		echo $border . "border-right: 0px solid #ccc;'><div style='display:flex; align-items:center;'><img class='m-2' style='border-radius: 2px; display:block;' src='" . $row["AuthorAvatarURL"] . "' height='20' width='20' alt='Avatar' />\n";
 		$splitAuthor = explode ( '@', $row["Author"] );
-		echo htmlentities($splitAuthor[0]) . "</div></td>\n";
+		echo htmlspecialchars($splitAuthor[0]) . "</div></td>\n";
 
 		// master branch is just null in the database
 		$modifiedVersion = $row["Version"] ? $row["Version"] : "master";
@@ -474,7 +474,7 @@ if ($result->num_rows > 0) {
 				break;
 			}
 			echo "<span class='commit-header' style='display: block; padding-left: 0.80em; text-indent:-0.80em; margin: 5px 0;'>";
-			$line = htmlentities(preg_replace('/^-|\* /', '• ', $line));
+			$line = htmlspecialchars(preg_replace('/^-|\* /', '• ', $line));
 			if ($i > 1) {
 				$line = "<small>" . $line . "</small>";
 			} else {
