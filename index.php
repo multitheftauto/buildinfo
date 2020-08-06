@@ -100,7 +100,7 @@ if ($revision != null && $revision < 7088)
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <title>MTASA Build Information</title>
 <!-- <link rel="stylesheet" type="text/css" href="css.css?1" /> -->
-<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link href="https://unpkg.com/@primer/css@15.0.0/dist/primer.css" rel="stylesheet" />
 <script type="text/javascript">
 function toggleFullMessages() {
 	const url = new URL(window.location);
