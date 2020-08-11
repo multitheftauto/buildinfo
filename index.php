@@ -1,28 +1,27 @@
 <?php
-
 require 'config.php';
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 const DEFAULT_LIMIT_MESSAGE_ENABLED = true;
 const MESSAGE_LINE_LIMIT = 3;
 
-function CheckParam($param)
+function getParameterFromQuery($param)
 {
     return $_GET[$param] ?? null;
 }
 
-function RedirectToGoogleCode($version, $revision)
+function redirectToGoogleCode($version, $revision)
 {
     $redirectUrl = 'https://code.google.com/p/mtasa-blue/source/list?num=25';
 
     if ($version != null) {
         $redirectUrl = 'https://code.google.com/p/mtasa-blue/source/list?path=/';
 
-        if ($version != "trunk" && $version != "master") {
+        if ($version != 'trunk' && $version != 'master') {
             $redirectUrl .= "branches/$version/";
         }
 
-        $redirectUrl .= "trunk/";
+        $redirectUrl .= 'trunk/';
     }
 
     if ($revision != null) {
@@ -34,16 +33,16 @@ function RedirectToGoogleCode($version, $revision)
     header('Location: ' . $redirectUrl);
 }
 
-$dbConnection = mysqli_connect($servername, $username, $password, "", 3306);
+$dbConnection = mysqli_connect($servername, $username, $password, '', 3306);
 
 if (!$dbConnection) {
-    die("Connection failed: " . mysqli_connect_error());
+    die('Connection failed: ' . mysqli_connect_error());
 }
 
-$json = $_GET["json"] ?? null;
-if ($json == "true") {
+$json = $_GET['json'] ?? null;
+if ($json == 'true') {
 	header('Content-Type: application/json');
-	$result = $dbConnection->query("SELECT * FROM mta_gitstuff.github ORDER BY revision DESC, date DESC");
+	$result = $dbConnection->query('SELECT * FROM mta_gitstuff.github ORDER BY revision DESC, date DESC');
 	$commits = $result->fetch_all(MYSQLI_ASSOC);
 
 	echo json_encode($commits);
@@ -53,163 +52,83 @@ if ($json == "true") {
 $itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
 $lineLimitEnabled = isset($_GET['full']) ? $_GET['full'] == 'false' : DEFAULT_LIMIT_MESSAGE_ENABLED;
 
-// Get our parameters
-$version = CheckParam('Branch');
-$revision = CheckParam('Revision');
-$user = CheckParam('Author');
-$SHA = CheckParam('SHA');
-$page = CheckParam('Page');
-$limit = CheckParam('Limit');
+$version = getParameterFromQuery('Branch');
+$revision = getParameterFromQuery('Revision');
+$user = getParameterFromQuery('Author');
+$SHA = getParameterFromQuery('SHA');
+$currentPage = (int) getParameterFromQuery('Page');
+$limit = getParameterFromQuery('Limit');
 
 if (is_numeric($limit) && $limit <= 500) {
 	$itemsPerPage = $limit;
 }
-if (!is_numeric($page) || $page < 1) {
-	$page = 1;
+if ($currentPage < 1) {
+	$currentPage = 1;
 }
 
 // Anything less than this is google code
 if ($revision != null && $revision < 7088) {
-	RedirectToGoogleCode ( $version, $revision  );
+	redirectToGoogleCode ( $version, $revision  );
 }
-
-// escape page
-$page = mysqli_real_escape_string ( $dbConnection, $page );
 
 // Start with WHERE and then move onto AND so like *WHERE* Version=1.5.0 *AND* Revision=7030
-$word = " WHERE";
+$word = ' WHERE';
 $subquery = '';
 
-// build our massive where / and monstrosity
-if ( $version == "master" ) {
-    $subquery = $subquery . " WHERE Version='master'";
-    $word = " AND";
-    if ($revision == "latest") {
-        $subquery = $subquery . $word . " Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version='master')";
-    } else if ( $revision != null ) {
-        $subquery = $subquery . $word . " Revision='" . mysqli_real_escape_string ( $dbConnection, $revision ) . "'";
-    }
-
-    if ( $user != null ) {
-        $subquery = $subquery . $word .  " Author='" . mysqli_real_escape_string ( $dbConnection, $user )  . "'";
-    }
-
-    if ( $SHA != null ) {
-        $subquery = $subquery . $word . " Revision=(SELECT Revision from mta_gitstuff.github WHERE SHA='" . mysqli_real_escape_string ( $dbConnection, $SHA )  . "')";
-    }
-} else if ( $version == null ) {
-    if ( $revision != null ) {
-        if ($revision == "latest") {
-            $subquery = $subquery . $word . " Revision=(SELECT max(Revision) from mta_gitstuff.github)";
-            $word = " AND";
-        } else {
-            $subquery = $subquery . $word . " Revision='" . mysqli_real_escape_string ( $dbConnection, $revision )  . "'";
-            $word = " AND";
-        }
-
-        if ($user != null ) {
-            $subquery = $subquery . $word . " Author LIKE '" . mysqli_real_escape_string ( $dbConnection, $user )  . "%'";
-            $word = " AND";
-        }
-
-        if ( $SHA != null ) {
-            $subquery = $subquery . $word . " Revision=(SELECT Revision from mta_gitstuff.github WHERE SHA='" . mysqli_real_escape_string ( $dbConnection, $SHA )  . "')";
-            $word = " AND";
-        }
-    } else {
-        if ($user != null ) {
-            $subquery = $subquery . $word . " Author LIKE '" . mysqli_real_escape_string ( $dbConnection, $user )  . "%'";
-            $word = " AND";
-        }
-
-        if ( $SHA != null )
-        {
-            $subquery = $subquery . $word . " Revision=(SELECT Revision from mta_gitstuff.github WHERE SHA='" . mysqli_real_escape_string ( $dbConnection, $SHA )  . "')";
-            $word = " AND";
-        }
-    }
-} else {
-    $subquery = $subquery . $word . " Version LIKE '" . mysqli_real_escape_string ( $dbConnection, $version )  . "%'";
-    $word = " AND";
-    if ($revision == "latest") {
-        $subquery = $subquery . $word . " Revision=(SELECT max(Revision) from mta_gitstuff.github WHERE Version LIKE '" . mysqli_real_escape_string ( $dbConnection, $version ) . "%')";
-    } else if ( $revision != null ) {
-        $subquery = $subquery . $word . " Revision='" . mysqli_real_escape_string ( $dbConnection, $revision )  . "'";
-    }
-
-    if ($user != null ) {
-        $subquery = $subquery . $word . " Author LIKE '" . mysqli_real_escape_string ( $dbConnection, $user )  . "%'";
-    }
-
-    if ( $SHA != null ) {
-        $subquery = $subquery . $word . " Revision=(SELECT Revision from mta_gitstuff.github WHERE SHA='" . mysqli_real_escape_string ( $dbConnection, $SHA )  . "')";
-    }
+if ($version) {
+    $subquery .= sprintf('%s Version LIKE \'%%%s%%\'', $word, mysqli_real_escape_string ( $dbConnection, $version ));
+    $word = ' AND';
 }
 
-// get our number of commits so we can calcualte the number of pages
-$result = $dbConnection->query("SELECT COUNT(*) as Count FROM (SELECT Revision from mta_gitstuff.github $subquery group by Revision ) t;");
-$count = 0;
-
-// make sure we have some rows
-if ($result->num_rows > 0)
-{
-    // fetch our row
-    $row = $result->fetch_assoc();
-    // get our # of rows by dividing by the number of items per page and rounding up
-    $count = round(($row["Count"] / $itemsPerPage) + 0.5);
+if ($revision) {
+    $subquery .= sprintf('%s Revision = \'%s\'', $word, mysqli_real_escape_string($dbConnection, $revision));
+    $word = ' AND';
 }
 
-if ($page != null && $page > $count && $count != 0)
-{
-    // close the database connection
-    $dbConnection->close();
-    // Redirect to Google Code page
-    RedirectToGoogleCode ( $version, $revision  );
+if ($user) {
+    $subquery .= sprintf('%s Author LIKE \'%s%%\'', $word, mysqli_real_escape_string ( $dbConnection, $user ));
+    $word = ' AND';
 }
 
-// calculate next and previous page
-$nextpage = $page + 1;
-$previouspage = $page - 1;
-
-
-// case 1: empty GET so no parameters
-if (empty($_GET)) {
-    $NewerLink = "Page=$previouspage";
-    $OlderLink = "Page=$nextpage";
-}
-// case 2: get queries but no page yet
-else if ( !isset($_GET['Page']) ) {
-    $NewerLink = $_SERVER['QUERY_STRING'] . "&Page=$previouspage";
-
-    $OlderLink = $_SERVER['QUERY_STRING'] . "&Page=$nextpage";
-}
-// case 3: get query includes a page #
-else {
-    $NewerLink = str_replace("Page=" . $_GET['Page'], "Page=$previouspage", $_SERVER['QUERY_STRING']);
-    $OlderLink = str_replace("Page=" . $_GET['Page'], "Page=$nextpage", $_SERVER['QUERY_STRING']);
+if ($SHA) {
+    $subquery .= sprintf('%s SHA = \'%s\'', $word, mysqli_real_escape_string ( $dbConnection, $SHA ));
+    $word = ' AND';
 }
 
-$NewerLink = "index.php?" . $NewerLink;
-$OlderLink = "index.php?" . $OlderLink;
+// get our number of commits so we can calculate the number of pages
+$result = $dbConnection
+    ->query('
+        SELECT COUNT(*) 
+        FROM mta_gitstuff.github
+        $subquery
+        GROUP BY Revision ');
 
-// Create a variable to store our next / previous page tag string and build it up so we can print it at the top and bottom
+$totalRevisionsCount = $result->fetch_row()[0] ?? 0;
+$totalPagesCount = round(($totalRevisionsCount / $itemsPerPage) + 0.5);
+
+if ($currentPage != null && $currentPage > $totalPagesCount && $totalPagesCount != 0) {
+    redirectToGoogleCode ( $version, $revision  );
+}
+
+$previousPage = $currentPage - 1;
+$nextPage = $currentPage + 1;
+
+$baseLink = 'index.php?';
+$previousPageLink = $baseLink . http_build_query(['Page' => $previousPage] + $_GET);
+$nextPageLink = $baseLink . http_build_query(['Page' => $nextPage] + $_GET);
+
 $previousPageComponent = '<span class="previous_page disabled">Previous</span>';
-
-// if we need to show the "Previous" (newer) link
-if ($page > 1) {
-    $previousPageComponent = '<a class="previous_page" rel="previous" href="' . $NewerLink . '" aria-label="Previous Page">Previous</a> ';
+if ($currentPage > 1) {
+    $previousPageComponent = '<a class="previous_page" rel="previous" href="' . $previousPageLink . '" aria-label="Previous Page">Previous</a> ';
 }
 
 $nextPageLabel = 'Next';
-
-if ($nextpage > $count && $count != 0) {
+if ($nextPage > $totalPagesCount && $totalPagesCount != 0) {
     $nextPageLabel = 'Next (Google Code)';
 }
 
-$lowerLimit = ($page - 1) * $itemsPerPage;
-$MaxReturnAmount = $itemsPerPage;
+$lowerLimit = ($currentPage - 1) * $itemsPerPage;
 
-// Create a select statement
 $sql = "SELECT 
             Revision, 
             URL, 
@@ -221,19 +140,9 @@ $sql = "SELECT
             AuthorURL, 
             Version 
         FROM mta_gitstuff.github 
-        INNER JOIN (
-            SELECT Revision AS NewRevision 
-            FROM mta_gitstuff.github 
-            $subquery GROUP BY Revision ORDER BY Revision DESC LIMIT $lowerLimit, $MaxReturnAmount
-        ) t3 ON Revision = NewRevision";
+        $subquery
+        ORDER BY Revision DESC LIMIT $lowerLimit, $itemsPerPage";
 
-// add in our where clauses
-$sql = $sql . $subquery;
-
-// order by revision descending
-$sql = $sql . "  ORDER BY Revision DESC;";
-
-// start the query
 $result = $dbConnection->query($sql);
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 
@@ -310,8 +219,8 @@ $lastRevision = null;
                         <nav class="paginate-container" aria-label="Pagination">
                             <div class="pagination">
                                 <?= $previousPageComponent ?>
-                                <a class="next_page" rel="next" href="<?= $OlderLink ?>" aria-label="Next Page"><?= $nextPageLabel ?></a>
-                                <span class='disabled'>Page <?= $page ?> of <?= $count ?></span>
+                                <a class="next_page" rel="next" href="<?= $nextPageLink ?>" aria-label="Next Page"><?= $nextPageLabel ?></a>
+                                <span class='disabled'>Page <?= $currentPage ?> of <?= $totalPagesCount ?></span>
                             </div>
                         </nav>
                     </div>
@@ -338,7 +247,7 @@ $lastRevision = null;
     foreach($rows as $index => $row) {
         $currentRevision = $row['Revision'];
         $currentAuthorAvatarUrl = $row['AuthorAvatarURL'];
-        $currentAuthor = $row["Author"];
+        $currentAuthor = $row['Author'];
         $currentVersion = $row['Version'];
         $currentLogMessage = $row['LogMessage'];
         $currentCommitUrl = $row['URL'];
@@ -351,7 +260,7 @@ $lastRevision = null;
         $revisionCellClass = $sameRevision ? 'same-revision-cell' : 'revision-cell';
         $revisionCellBody = !$sameRevision ?
             sprintf('<a href="?Revision=%1$s&amp;Branch=%2$s">r%1$s</a>', $currentRevision, $version)
-            : "     ";
+            : '     ';
 
         $splitAuthor = explode ( '@', $currentAuthor );
         $authorName = htmlspecialchars($splitAuthor[0]);
@@ -379,7 +288,7 @@ $lastRevision = null;
 		// Indent wrapped lines, 5px between lines
         foreach($lineList as $i => $line) {
 			if ( $i > MESSAGE_LINE_LIMIT && $lineLimitEnabled ) {
-				echo "...";
+				echo '...';
 
 				break;
 			}
@@ -421,8 +330,8 @@ $lastRevision = null;
                     <nav class="paginate-container" aria-label="Pagination">
                         <div class="pagination">
                             <?= $previousPageComponent ?>
-                            <a class="next_page" rel="next" href="<?= $OlderLink ?>" aria-label="Next Page"><?= $nextPageLabel ?></a>
-                            <span class='disabled'>Page <?= $page ?> of <?= $count ?></span>
+                            <a class="next_page" rel="next" href="<?= $nextPageLink ?>" aria-label="Next Page"><?= $nextPageLabel ?></a>
+                            <span class='disabled'>Page <?= $currentPage ?> of <?= $totalPagesCount ?></span>
                         </div>
                     </nav>
                 </div>
